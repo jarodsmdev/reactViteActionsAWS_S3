@@ -33,3 +33,22 @@ jobs:
           retention-days: 5
           compression-level: 6
           overwrite: true
+
+  eploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Cambia esto a tu región si es necesario
+
+      - name: Sync to S3 (upload files)
+        run: |
+          # Asegurate de que 'dist' es la carpeta que contiene index.html y assets
+          aws s3 sync dist/ s3://${{ env.S3_BUCKET }}/ --delete --acl public-read
