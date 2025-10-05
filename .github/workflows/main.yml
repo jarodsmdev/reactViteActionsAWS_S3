@@ -58,4 +58,4 @@ jobs:
       - name: Sync to S3 (upload files)
         run: |
           # Asegurate de que 'dist' es la carpeta que contiene index.html y assets
-          aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }}/ --delete --acl public-read
+          aws s3 sync dist/ s3://${{ secrets.S3_BUCKET }}/ --delete
