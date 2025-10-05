@@ -1,29 +1,26 @@
 name: Deploy to AWS S3
 
 on:
-  push:
-    branches:
-      - main
+    workflow_run:
+        workflows: ["Build and Artifact"]
+        types:
+            - completed
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: vite-project-build
-          path: dist
-
-      - name: Upload to S3
-        uses: aws-actions/s3-sync@v2
-        with:
-          bucket: my-bucket-react-page-artifact-s3
-          region: us-east-1
-          source: dist
-          delete: true # borra archivos viejos del bucket
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                  name: vite-project-build
+                  path: dist
+            - name: Upload to S3
+              uses: aws-actions/s3-sync@v2
+              with:
+                  bucket: my-bucket-react-page-artifact-s3
+                  region: us-east-1
+                  source: dist
+                  delete: true
+              env:
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
